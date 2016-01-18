@@ -1,4 +1,4 @@
-var server = require("./server");
+var server = require("server");
 
 console.log("app started");
 server.run();

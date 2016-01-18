@@ -1,8 +1,8 @@
 var phrases;
 
-exports.connnect = function () {
+exports.connect = function () {
 	phrases = require("./phrases");
-}
+};
 
 exports.getPhrase = function (name) {
 	if (!phrases[name]) {

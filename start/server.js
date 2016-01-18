@@ -1,6 +1,6 @@
-var db = require("./db");
-db.connnect();
-var User = require("./user");
+var db = require("db");
+db.connect();
+var User = require("user");
 
 function run() {
 	var vasya = new User("Вася");
