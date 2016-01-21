@@ -4,6 +4,9 @@ var url = require("url");
 
 var server = new http.Server(function (req, res) {
 	var urlParsed = url.parse(req.url, true);
+
+	debugger;
+
 	if (urlParsed.pathname === "/echo" && urlParsed.query.message) {
 		res.setHeader("cache-control", "no-cache"); //removeHeader
 		//res.writeHead(200, "OK", {"Cache-control": "no-cache"});
@@ -16,3 +19,5 @@ var server = new http.Server(function (req, res) {
 });
 
 server.listen(1377, "127.0.0.1");
+
+console.log("Server is running");
