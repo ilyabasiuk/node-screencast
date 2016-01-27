@@ -1,7 +1,5 @@
-var http = require("http");
 var fs = require("fs");
-
-function handler(req, res) {
+function handleRequest(req, res) {
 	if (req.url === "/") {
 		fs.readFile("index1.html", function (err, data) {
 			if (err) throw err;
@@ -11,7 +9,6 @@ function handler(req, res) {
 		res.statusCode = 404;
 		res.end("Not Found");
 	}
-}
+};
 
-var server = http.createServer(handler);
-module.exports = server;
+module.exports = handleRequest;
