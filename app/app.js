@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var errorhandler = require('errorhandler')
+
 var app = express();
 
 //Middleware
@@ -45,9 +47,14 @@ app.use(function (req, res) {
 
 app.use(function (err, req, res, next) {
   //NODE_ENV = "production"
-  if (app.get("env") === "development") {
-    res.end("Error");
+  console.log(app.get("env"), app.get("env") == "development");
+  if (app.get("env") == "development") {
+    var errorHandler = errorhandler();
+    errorHandler(err, req, res, next);
+  } else {
+    res.status(500).send("Production");
   }
+
 });
 
 //// view engine setup
