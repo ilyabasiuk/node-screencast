@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var log = require("libs/log")(module);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -13,7 +14,7 @@ var errorhandler = require('errorhandler')
 var app = express();
 var config = require("config");
 
-console.log(config.get("port"));
+log.info(config.get("port"));
 //Middleware
 app.use(function(req, res, next) {
   if (req.url === "/") {
