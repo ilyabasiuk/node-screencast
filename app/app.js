@@ -11,7 +11,9 @@ var users = require('./routes/users');
 var errorhandler = require('errorhandler')
 
 var app = express();
+var config = require("config");
 
+console.log(config.get("port"));
 //Middleware
 app.use(function(req, res, next) {
   if (req.url === "/") {
