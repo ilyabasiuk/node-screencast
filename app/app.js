@@ -20,8 +20,20 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-  if (req.url === "/test") {
-    res.end("Hello Test");
+  if (req.url === "/forbidden") {
+    //res.send(404)
+    next(new Error("wops, denied!"));
+  } else {
+    next();
+  }
+});
+
+app.use(function(req, res, next) {
+  if (req.url === "/error") {
+    //BLAB();
+    setTimeout(function () {
+        BLAB();
+    }, 10);
   } else {
     next();
   }
@@ -29,6 +41,13 @@ app.use(function(req, res, next) {
 
 app.use(function (req, res) {
     res.status(404).send("No such page");
+});
+
+app.use(function (err, req, res, next) {
+  //NODE_ENV = "production"
+  if (app.get("env") === "development") {
+    res.end("Error");
+  }
 });
 
 //// view engine setup
