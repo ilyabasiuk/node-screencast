@@ -16,7 +16,7 @@ var config = require("config");
 
 log.info(config.get("port"));
 
-//app.engine("ejs", require("ejs-locals")); //layout partial block
+app.engine("ejs", require("ejs-locals")); //layout partial block
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 //Middleware
@@ -30,8 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get("/", function (req, res, next) {
   res.render("index", {
-    title: "Hello world",
-    body: "<b> Hello</b>"
+    title: "Hello world"
   });
 });
 
