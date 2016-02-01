@@ -1,23 +1,23 @@
-var MongoClient = require('mongodb').MongoClient;
-// Connection url
-var url = 'mongodb://localhost:27017/chat';
-// Connect using MongoClient
-MongoClient.connect(url, function(err, db) {
-	if (err) throw err;
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test');
 
-	var collection = db.collection("test_insert");
-	collection.removeOne({}, function (err, results) {
-		if (err) throw err;
-		collection.insertOne({a: 2}, function (err, docs) {
-			//collection.count(function (err, count) {
-			//	console.log("count = %s", count);
-			//});
-
-			var cursor = collection.find({a:2});
-			cursor.toArray(function (err, results) {
-				console.dir(results);
-				db.close();
-			})
-		});
-	});
+var schema = mongoose.Schema({
+	name: String
 });
+
+schema.methods.say = function () {
+	console.log("%s: %s",this.get("name"), "meow!" );
+};
+var Cat = mongoose.model('Cat', schema); // cats collection
+
+var kitty = new Cat({
+	name: 'Zildjian'
+});
+kitty.save(function (err, kitty, affected) {
+	kitty.say();
+});
+
+//kitty.save(function (err) {
+//	if (err) // ...
+//		console.log('meow');
+//});
