@@ -15,37 +15,24 @@ var app = express();
 var config = require("config");
 
 log.info(config.get("port"));
+
+//app.engine("ejs", require("ejs-locals")); //layout partial block
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 //Middleware
-app.use(function(req, res, next) {
-  if (req.url === "/") {
-    res.end("Hello");
-  } else {
-    next();
-  }
-});
+// uncomment after placing your favicon in /public
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(function(req, res, next) {
-  if (req.url === "/forbidden") {
-    //res.send(404)
-    next(new Error("wops, denied!"));
-  } else {
-    next();
-  }
-});
-
-app.use(function(req, res, next) {
-  if (req.url === "/error") {
-    //BLAB();
-    setTimeout(function () {
-        BLAB();
-    }, 10);
-  } else {
-    next();
-  }
-});
-
-app.use(function (req, res) {
-    res.status(404).send("No such page");
+app.get("/", function (req, res, next) {
+  res.render("index", {
+    title: "Hello world",
+    body: "<b> Hello</b>"
+  });
 });
 
 app.use(function (err, req, res, next) {
