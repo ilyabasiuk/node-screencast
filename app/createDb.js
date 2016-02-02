@@ -27,26 +27,16 @@ function dropDatabase (callback) {
 }
 
 function createUsers (callback) {
-	async.parallel([
-		function (callback) {
-			var vasya = new User({username: "Вася", password: "supervasya"});
-			vasya.save(function (err) {
-				callback(err, vasya);
-			});
-		},
-		function (callback) {
-			var petya = new User({username: "Петя", password: "123"});
-			petya.save(function (err) {
-				callback(err, petya);
-			});
-		},
-		function (callback) {
-			var admin = new User({username: "фвьшт", password: "thetruehero"});
-			admin.save(function (err) {
-				callback(err, admin);
-			});
-		}
-	], callback);
+	var users = [
+		{username: "Вася", password: "supervasya"},
+		{username: "Петя", password: "123"},
+		{username: "admin", password: "thetruehero"}
+	];
+
+	async.each(users, function (userData, callback) {
+		var user = new User(userData);
+		user.save(callback);
+	}, callback);
 }
 
 function close(callback) {
