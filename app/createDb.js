@@ -9,11 +9,11 @@ var async = require("async"); // Promise, Fibers
 async.series([
 	open,
 	dropDatabase,
-	createUsers,
-	close
-], function (err, results) {
-	if (err) throw err;
-	console.log(arguments);
+	requireModels,
+	createUsers
+], function (err) {
+	mongoose.disconnect();
+	process.exit(err ? 255 : 0);
 });
 
 function open(callback) {
@@ -22,14 +22,17 @@ function open(callback) {
 
 function dropDatabase (callback) {
 	var db = mongoose.connection.db;
-	console.log("Drop database: will be execute after mongoose  apply its settings to db :(");
-	// use db.users.getIndexes() from mongo console to check if indexes was created
 	db.dropDatabase(callback);
 }
 
-function createUsers (callback) {
+function requireModels(callback) {
 	require("models/user");
+	async.forEachOf(mongoose.models, function (model, key, callback) {
+		model.ensureIndexes(callback);
+	}, callback);
+}
 
+function createUsers (callback) {
 	var users = [
 		{username: "Вася", password: "supervasya"},
 		{username: "Петя", password: "123"},
@@ -40,8 +43,4 @@ function createUsers (callback) {
 		var user = new mongoose.models.User(userData);
 		user.save(callback);
 	}, callback);
-}
-
-function close(callback) {
-	mongoose.disconnect(callback);
 }
