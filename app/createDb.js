@@ -1,7 +1,6 @@
 var mongoose = require("libs/mongoose");
+mongoose.set("debug", true);
 var async = require("async"); // Promise, Fibers
-var User = require("models/user").User;
-
 
 // 1. drop db
 // 2. create & save 3 users
@@ -23,10 +22,14 @@ function open(callback) {
 
 function dropDatabase (callback) {
 	var db = mongoose.connection.db;
+	console.log("Drop database: will be execute after mongoose  apply its settings to db :(");
+	// use db.users.getIndexes() from mongo console to check if indexes was created
 	db.dropDatabase(callback);
 }
 
 function createUsers (callback) {
+	require("models/user");
+
 	var users = [
 		{username: "Вася", password: "supervasya"},
 		{username: "Петя", password: "123"},
@@ -34,7 +37,7 @@ function createUsers (callback) {
 	];
 
 	async.each(users, function (userData, callback) {
-		var user = new User(userData);
+		var user = new mongoose.models.User(userData);
 		user.save(callback);
 	}, callback);
 }
