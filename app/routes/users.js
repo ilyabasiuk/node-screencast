@@ -1,9 +1,34 @@
-var express = require('express');
-var router = express.Router();
+var error = require("error");
+var HttpError = error.HttpError;
+var ObjectID = require("mongodb").ObjectID;
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+module.exports = function (app) {
+	app.get("/", function (req, res, next) {
+		res.render("index", {
+			title: "Hello world"
+		});
+	});
 
-module.exports = router;
+	var User = require("models/user").User;
+	app.get("/users", function (req, res, next) {
+		User.find({}, function (err, users) {
+			if (err) return next(err);
+			//res.end(users.map((user) => user.username).join("*"));
+			res.json(users);
+		})
+	});
+
+	app.get("/user/:id", function (req, res, next) {
+		try {
+			var id = new ObjectID(req.params.id);
+		} catch (e) {
+			return next(404);
+		}
+		User.findById(id, function (err, user) {
+			if (err) return next(err);
+			if (!user) return next(new error.HttpError(404, "Юзер потерялся"));
+			//res.end(users.map((user) => user.username).join("*"));
+			res.json(user);
+		});
+	});
+};
