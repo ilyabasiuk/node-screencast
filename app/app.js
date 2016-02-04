@@ -5,7 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var log = require("libs/log")(module);
-
+var error = require("error");
+var HttpError = error.HttpError;
+var ObjectID = require("mongodb").ObjectID;
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -28,24 +30,55 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(require("middleware/sendHttpError"));
+
 app.get("/", function (req, res, next) {
-  res.render("index", {
-    title: "Hello world"
-  });
+	res.render("index", {
+		title: "Hello world"
+	});
+});
+
+var User = require("models/user").User;
+app.get("/users", function (req, res, next) {
+	User.find({}, function (err, users) {
+		if (err) return next(err);
+		//res.end(users.map((user) => user.username).join("*"));
+		res.json(users);
+	})
+});
+
+app.get("/user/:id", function (req, res, next) {
+	try {
+		var id = new ObjectID(req.params.id);
+	} catch (e) {
+		return next(404);
+	}
+	User.findById(id, function (err, user) {
+		if (err) return next(err);
+		if (!user) return next(new error.HttpError(404, "Юзер потерялся"));
+		//res.end(users.map((user) => user.username).join("*"));
+		res.json(user);
+	});
 });
 
 app.use(function (err, req, res, next) {
-  //NODE_ENV = "production"
-  console.log(app.get("env"), app.get("env") == "development");
-  if (app.get("env") == "development") {
-    var errorHandler = errorhandler();
-    errorHandler(err, req, res, next);
-  } else {
-    res.status(500).send("Production");
-  }
+	//NODE_ENV = "production"
+	if (typeof err === "number") {
+		err = new HttpError(err);
+	}
+	if (err instanceof HttpError) {
+		res.sendHttpError(err);
+	} else {
+		if (app.get("env") == "development") {
+			var errorHandler = errorhandler();
+			errorHandler(err, req, res, next);
+		} else {
+			res.sendHttpError();
+		}
+	}
+
 
 });
-
 //// view engine setup
 //app.set('views', path.join(__dirname, 'views'));
 //app.set('view engine', 'ejs');
