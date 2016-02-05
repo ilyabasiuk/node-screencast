@@ -4,10 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+
 var log = require("libs/log")(module);
 var error = require("error");
 var HttpError = error.HttpError;
-var routes = require('./routes/index');
+//var routes = require('./routes/index');
+var routes = require("./routes/users");
 
 var errorhandler = require('errorhandler')
 
@@ -19,8 +21,7 @@ log.info(config.get("port"));
 app.engine("ejs", require("ejs-locals")); //layout partial block
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-//Middleware
-// uncomment after placing your favicon in /public
+
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -29,7 +30,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(require("middleware/sendHttpError"));
-require("./routes/users")(app);
+app.use('/', routes);
 
 app.use(function (err, req, res, next) {
 	//NODE_ENV = "production"
